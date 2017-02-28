@@ -14,9 +14,26 @@ this file and include it in basic-server.js so that it actually works.
 
 var results = [];
 
+// These headers will allow Cross-Origin Resource Sharing (CORS).
+// This code allows this server to talk to websites that
+// are on different domains, for instance, your chat client.
+//
+// Your chat client is running from a url like file://your/chat/client/index.html,
+// which is considered a different domain.
+//
+// Another way to get around this restriction is to serve you chat
+// client from this domain by setting up static file serving.
+var defaultCorsHeaders = {
+  'access-control-allow-origin': '*',
+  'access-control-allow-methods': 'GET, POST, PUT, DELETE, OPTIONS',
+  'access-control-allow-headers': 'content-type, accept',
+  'access-control-max-age': 10 // Seconds.
+};
+
+
 var requestHandler = function(request, response) {
-  console.log("====================================", request);
-  console.log("------------------------------------", response);
+  console.log('====================================', request);
+  console.log('------------------------------------', response);
   // Request and Response come from node's http module.
   //
   // They include information about both the incoming request, such as
@@ -35,10 +52,14 @@ var requestHandler = function(request, response) {
 
   // The outgoing status.
   var statusCode;
-  if (request.method === 'GET') {
-    statusCode = 200;
-  } else if (request.method === 'POST') {
-    statusCode = 201;
+  if (request.url === '/classes/messages') {
+    if (request.method === 'GET') {
+      statusCode = 200;
+    } else if (request.method === 'POST') {
+      statusCode = 201;
+    } 
+  } else {
+    statusCode = 404;
   }
 
   // See the note below about CORS headers.
@@ -48,7 +69,7 @@ var requestHandler = function(request, response) {
   //
   // You will need to change this if you are sending something
   // other than plain text, like JSON or HTML.
-  headers['Content-Type'] = 'text/plain';
+  headers['Content-Type'] = 'application/json';
 
   // .writeHead() writes to the request line and headers of the response,
   // which includes the status and all headers.
@@ -68,28 +89,17 @@ var requestHandler = function(request, response) {
   if (statusCode === 201) {
     request.on('data', function(that) {
       results.push(JSON.parse(that));
-      console.log(that);
-      console.log(results);
+      console.log("that: " , that);
+      console.log("The results: ", results);
     });
   }
-  response.end(JSON.stringify(response));
+  var json = {
+    results: results
+  };
+  response.end(JSON.stringify(json));
 };
 
-// These headers will allow Cross-Origin Resource Sharing (CORS).
-// This code allows this server to talk to websites that
-// are on different domains, for instance, your chat client.
-//
-// Your chat client is running from a url like file://your/chat/client/index.html,
-// which is considered a different domain.
-//
-// Another way to get around this restriction is to serve you chat
-// client from this domain by setting up static file serving.
-var defaultCorsHeaders = {
-  'access-control-allow-origin': '*',
-  'access-control-allow-methods': 'GET, POST, PUT, DELETE, OPTIONS',
-  'access-control-allow-headers': 'content-type, accept',
-  'access-control-max-age': 10 // Seconds.
-};
+
 
 exports.requestHandler = requestHandler;
 

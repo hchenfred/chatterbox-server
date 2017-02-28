@@ -16,7 +16,7 @@ var app = {
 
     // Cache jQuery selectors
     app.$message = $('#message');
-    app.$chats = $('#chats');
+    app.$chats = $('#chats'); 
     app.$roomSelect = $('#roomSelect');
     app.$send = $('#send');
 
@@ -30,9 +30,9 @@ var app = {
     app.fetch(false);
 
     // Poll for new messages
-    setInterval(function() {
-      app.fetch(true);
-    }, 3000);
+    // setInterval(function() {
+    //   app.fetch(true);
+    // }, 3000);
   },
 
   send: function(message) {
@@ -63,8 +63,10 @@ var app = {
       data: { order: '-createdAt' },
       contentType: 'application/json',
       success: function(data) {
+
+        console.log(!data.results);
         // Don't bother if we have nothing to work with
-        if (!data.results || !data.results.length) { return; }
+        if (!data.results || !data.results.length) { console.log("wow"); return; }
 
         // Store messages for caching later
         app.messages = data.results;
@@ -100,6 +102,7 @@ var app = {
     app.stopSpinner();
     if (Array.isArray(messages)) {
       // Add all fetched messages that are in our current room
+
       messages
         .filter(function(message) {
           return message.roomname === app.roomname ||
