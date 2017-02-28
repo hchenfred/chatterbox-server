@@ -12,7 +12,11 @@ this file and include it in basic-server.js so that it actually works.
 
 **************************************************************/
 
+var results = [];
+
 var requestHandler = function(request, response) {
+  console.log("====================================", request);
+  console.log("------------------------------------", response);
   // Request and Response come from node's http module.
   //
   // They include information about both the incoming request, such as
@@ -30,7 +34,12 @@ var requestHandler = function(request, response) {
   console.log('Serving request type ' + request.method + ' for url ' + request.url);
 
   // The outgoing status.
-  var statusCode = 200;
+  var statusCode;
+  if (request.method === 'GET') {
+    statusCode = 200;
+  } else if (request.method === 'POST') {
+    statusCode = 201;
+  }
 
   // See the note below about CORS headers.
   var headers = defaultCorsHeaders;
@@ -44,6 +53,9 @@ var requestHandler = function(request, response) {
   // .writeHead() writes to the request line and headers of the response,
   // which includes the status and all headers.
   response.writeHead(statusCode, headers);
+  // response.on("data", function(chunk) {
+  //   response.write(chunk.toString());
+  // });
 
   // Make sure to always call response.end() - Node may not send
   // anything back to the client until you do. The string you pass to
@@ -52,7 +64,15 @@ var requestHandler = function(request, response) {
   //
   // Calling .end "flushes" the response's internal buffer, forcing
   // node to actually send all the data over to the client.
-  response.end('Hello, World!');
+  response.results = results;
+  if (statusCode === 201) {
+    request.on('data', function(that) {
+      results.push(JSON.parse(that));
+      console.log(that);
+      console.log(results);
+    });
+  }
+  response.end(JSON.stringify(response));
 };
 
 // These headers will allow Cross-Origin Resource Sharing (CORS).
@@ -70,4 +90,16 @@ var defaultCorsHeaders = {
   'access-control-allow-headers': 'content-type, accept',
   'access-control-max-age': 10 // Seconds.
 };
+
+exports.requestHandler = requestHandler;
+
+
+
+
+
+
+
+
+
+
 
