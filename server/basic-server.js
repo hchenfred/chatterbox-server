@@ -42,18 +42,3 @@ server.listen(port, ip);
 // server.listen() will continue running as long as there is the
 // possibility of serving more requests. To stop your server, hit
 // Ctrl-C on the command line.
-
-
-/*
-var http = require("http");
-http.createServer(function(request, response) {
-  response.writeHead(200, {"Content-Type": "text/plain"});
-  request.on("data", function(chunk) {
-    response.write(chunk.toString().toUpperCase());
-  });
-  request.on("end", function() {
-    response.end();
-  });
-}).listen(8000);
-
-*/

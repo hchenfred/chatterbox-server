@@ -87,34 +87,10 @@ var requestHandler = function(request, response) {
   // node to actually send all the data over to the client.
   response.results = results;
   if (request.method === 'POST') {
-    var body = [];
     request.on('data', function(chunk) {
       results.push(JSON.parse(chunk));
-      // console.log('what is chunk??????? ====================>: ', chunk);
-      // body.push(chunk);
-      // body = Buffer.concat(body).toString();
-      // console.log("This is body====>", body);
-      // var temp = JSON.stringify(body);
-      // var outcome = JSON.parse(temp);
-      // console.log("after parsing: =======================>", outcome);
-      // var text = outcome.message;
-      // var username = outcome.username;
-      // var roomname = outcome.roomname;
-      // var bodyObject = {
-      //   text: text,
-      //   username: username,
-      //   roomname: roomname,
-      //   objectId: id
-      // };
 
-      //console.log("what is bodyObject=================================", bodyObject);
-      //bodyObject.objectId = id;
-
-      //id++;
-      console.log('results', results);
-      //results.push(bodyObject);
     });
-    //id++;
   }
   var responseBody = {
     headers: headers,

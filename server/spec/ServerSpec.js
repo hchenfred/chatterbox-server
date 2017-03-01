@@ -116,4 +116,55 @@ describe('Node Server Request Listener Function', function() {
       });
   });
 
+  it('Should accept options to /classes/messages', function() {
+    var stubMsg = {
+      username: 'Jono',
+      message: 'Do my bidding!'
+    };
+    var req = new stubs.request('/classes/messages', 'OPTIONS', stubMsg);
+    var res = new stubs.response();
+
+    handler.requestHandler(req, res);
+
+    // Expect 201 Created response status
+    expect(res._responseCode).to.equal(200);
+
+    // Testing for a newline isn't a valid test
+    // TODO: Replace with with a valid test
+    // expect(res._data).to.equal(JSON.stringify('\n'));
+    expect(res._ended).to.equal(true);
+  });
+
+
+  it('Should have the return data as JSON.stringify', function() {
+    var stubMsg = {
+      username: 'Jono',
+      message: 'Do my bidding!'
+    };
+    var req = new stubs.request('/classes/messages', 'POST', stubMsg);
+    var res = new stubs.response();
+
+    handler.requestHandler(req, res);
+
+    expect(res._responseCode).to.equal(201);
+
+      // Now if we request the log for that room the message we posted should be there:
+    req = new stubs.request('/classes/messages', 'GET');
+    res = new stubs.response();
+
+    handler.requestHandler(req, res);
+    var isJson = function(str) {
+      try {
+        JSON.parse(str);
+      } catch (e) {
+        return false;
+      }
+      return true;
+    };
+    
+    expect(isJson(res._data)).to.equal(true);
+  });
+
+
+
 });
